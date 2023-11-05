@@ -27,7 +27,7 @@ functions = [
                     "description": "The type of vulnerability found, e.g. Buffer Overflow"
                 },
                 "severity": {
-                    "type": "integer",
+                    "type": "string",
                     "description": "A number between 1 and 10 indicating the severity of the vulnerability, with 10 being the most severe"
                 },
                 "mitigation_recommendation": {
