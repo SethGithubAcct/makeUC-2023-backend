@@ -58,7 +58,7 @@ def report_vulnerability(vulnerability_type, severity, mitigation_recommendation
     })
 
 @app.route("/analyze", methods=['POST'])
-@cross_origin()
+@cross_origin(origins="*", allow_headers="*", methods="*")
 def analyze(request):
     messages = [
         {'role': "system", 'content': system_prompt},
@@ -95,10 +95,7 @@ def analyze(request):
             model=model,
             messages=messages
         )
-        output = jsonify(final_response)
-        output.headers.add("Access-Control-Allow-Origin", "*")
-        output.headers.add("Access-Control-Allow-Method", "*")
-        return output
+        return final_response.choices[0].message
 
 if __name__ == "__main__":
     app.run()
