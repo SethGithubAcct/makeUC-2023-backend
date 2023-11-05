@@ -13,32 +13,9 @@ model = "gpt-4" # change me to change GPT model
 system_prompt = """
 You are a code vulnerability scanning AI. You are to analyze submitted code and check if there are vulnerabilities.
 If a vulnerability is found, call the report_vulnerability function and fill out the required arguments accordingly.
-Your response should be in JSON format.
+Your response should be in JSON format, specifying the vulnerability type, the severity of the vulnerability on a scale of 1 to 10,
+and a recommendation on how to mitigate the vulnerability.
 """
-functions = [
-    {
-        "name": "report_vulnerability",
-        "description": "Convert vulnerability info into JSON format.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "vulnerability_type": {
-                    "type": "string",
-                    "description": "The type of vulnerability found, e.g. Buffer Overflow",
-                },
-                "severity": {
-                    "type": "integer",
-                    "description": "A number between 1 and 10 indicating the severity of the vulnerability, with 10 being the most severe",
-                },
-                "mitigation_recommendation": {
-                    "type": "string",
-                    "description": "An explanation for the user on how they could fix the vulnerability in their code",
-                },
-            },
-            "required": ["vulnerability_type", "severity", "mitigation_recommendation"],
-        },
-    }
-]
 
 # get OpenAI key from secret manager
 api_secret = client.access_secret_version(
@@ -68,35 +45,8 @@ def analyze():
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        functions=functions,
-        function_call="auto"
     )
-    response_message = response["choices"][0]["message"]
-    available_functions = {
-        "report_vulnerability": report_vulnerability
-    }
-    function_name = response_message["function_call"]["name"]
-    called_function = available_functions[function_name]
-    function_args = json.loads(response_message["function_call"]["arguments"])
-    function_response = called_function(
-        vulnerability_type=function_args.get("vulnerability_type"),
-        severity=function_args.get("severity"),
-        mitigation_recommendation=function_args.get("mitigation_recommendation")
-    )
-    messages.append(response_message)
-    messages.append(
-        {
-            "role": "function",
-            "name": function_name,
-            "content": function_response
-        }
-    )
-    final_response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages
-    )
-    print(final_response)
-    return final_response
+    return response
 
 if __name__ == "__main__":
     app.run()
