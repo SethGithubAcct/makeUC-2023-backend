@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from google.cloud import secretmanager_v1 as secmgr
 import openai
@@ -95,7 +95,9 @@ def analyze(request):
             model=model,
             messages=messages
         )
-        return final_response
+        output = jsonify(final_response)
+        output.headers.add("Access-Control-Allow-Origin", "*")
+        return output
 
 if __name__ == "__main__":
     app.run()
