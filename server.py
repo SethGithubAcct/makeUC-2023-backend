@@ -62,7 +62,7 @@ def report_vulnerability(vulnerability_type, severity, mitigation_recommendation
 def analyze():
     messages = [
         {'role': "system", 'content': system_prompt},
-        {'role': "user", 'content': f"Analyze the following {request.data['code']} code: {request.data['language']}"}
+        {'role': "user", 'content': "Analyze the following {} code: {}".format(request.data['language'], request.data['code'])}
     ] 
     response = openai.ChatCompletion.create(
         model=model,
