@@ -12,7 +12,7 @@ client = secmgr.SecretManagerServiceClient()
 model = "gpt-4" # change me to change GPT model
 system_prompt = """
 You are a code vulnerability scanning AI. You are to analyze submitted code and check if there are vulnerabilities.
-If vulnerabilities are found, list each one and tell the user what the issue is, and how to fix the vulnerability.
+If vulnerabilites are found, list each of them one by one (separated by newlines), explaining the vulnerability as well as providing a solution.
 """
 
 # get OpenAI key from secret manager
