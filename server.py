@@ -59,10 +59,10 @@ def report_vulnerability(vulnerability_type, severity, mitigation_recommendation
 
 @app.route("/analyze", methods=['POST'])
 @cross_origin()
-def analyze(code, language):
+def analyze():
     messages = [
         {'role': "system", 'content': system_prompt},
-        {'role': "user", 'content': f"Analyze the following {code} code: {language}"}
+        {'role': "user", 'content': f"Analyze the following {request.data['code'].decode('utf-8')} code: {request.data['language'].decode('utf-8')}"}
     ] 
     response = openai.ChatCompletion.create(
         model=model,
