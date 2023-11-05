@@ -2,3 +2,4 @@ Flask==3.0.0
 openai==0.28.1
 protobuf==4.25.0
 Requests==2.31.0
+google-cloud-secret-manager
