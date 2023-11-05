@@ -96,7 +96,7 @@ def analyze():
             model=model,
             messages=messages
         )
-        return final_response.choices[0].message
+        return final_response
 
 if __name__ == "__main__":
     app.run()
