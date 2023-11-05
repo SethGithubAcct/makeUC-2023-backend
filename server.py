@@ -13,7 +13,7 @@ model = "gpt-4" # change me to change GPT model
 system_prompt = """
 You are a code vulnerability scanning AI. You are to analyze submitted code and check if there are vulnerabilities.
 If a vulnerability is found, call the report_vulnerability function and fill out the required arguments accordingly.
-Your response should be in JSON format, specifying the vulnerability type, the severity of the vulnerability on a scale of 1 to 10,
+Your response should specify the vulnerability type, the severity of the vulnerability on a scale of 1 to 10,
 and a recommendation on how to mitigate the vulnerability.
 """
 
@@ -46,7 +46,7 @@ def analyze():
         model=model,
         messages=messages,
     )
-    return response
+    return response.choices[0].message.content
 
 if __name__ == "__main__":
     app.run()
