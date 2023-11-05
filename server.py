@@ -60,7 +60,7 @@ def report_vulnerability(vulnerability_type, severity, mitigation_recommendation
 @app.route("/analyze", methods=['POST'])
 @cross_origin()
 def analyze():
-    data_json = json.dumps(request.data)
+    data_json = json.dumps(request.data.decode('utf-8'))
     messages = [
         {'role': "system", 'content': system_prompt},
         {'role': "user", 'content': f"Analyze the following {data_json['language']} code: {data_json['code']}"}
