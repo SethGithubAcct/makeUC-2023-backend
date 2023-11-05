@@ -72,32 +72,31 @@ def analyze():
         function_call="auto"
     )
     response_message = response["choices"][0]["message"]
-    if response_message.get("function_call"):
-        available_functions = {
-            "report_vulnerability": report_vulnerability
+    available_functions = {
+        "report_vulnerability": report_vulnerability
+    }
+    function_name = response_message["function_call"]["name"]
+    called_function = available_functions[function_name]
+    function_args = json.loads(response_message["function_call"]["arguments"])
+    function_response = called_function(
+        vulnerability_type=function_args.get("vulnerability_type"),
+        severity=function_args.get("severity"),
+        mitigation_recommendation=function_args.get("mitigation_recommendation")
+    )
+    messages.append(response_message)
+    messages.append(
+        {
+            "role": "function",
+            "name": function_name,
+            "content": function_response
         }
-        function_name = response_message["function_call"]["name"]
-        called_function = available_functions[function_name]
-        function_args = json.loads(response_message["function_call"]["arguments"])
-        function_response = called_function(
-            vulnerability_type=function_args.get("vulnerability_type"),
-            severity=function_args.get("severity"),
-            mitigation_recommendation=function_args.get("mitigation_recommendation")
-        )
-        messages.append(response_message)
-        messages.append(
-            {
-                "role": "function",
-                "name": function_name,
-                "content": function_response
-            }
-        )
-        final_response = openai.ChatCompletion.create(
-            model=model,
-            messages=messages
-        )
-        print(final_response)
-        return final_response
+    )
+    final_response = openai.ChatCompletion.create(
+        model=model,
+        messages=messages
+    )
+    print(final_response)
+    return final_response
 
 if __name__ == "__main__":
     app.run()
