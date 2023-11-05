@@ -29,4 +29,5 @@ def analyze():
     )
     return json.dumps(response.choices[0].message)
 
-app.run()
+if __name__ == "__main__":
+    app.run()
