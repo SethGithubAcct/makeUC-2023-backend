@@ -37,14 +37,6 @@ functions = [
     }
 ]
 
-# GPT-4 should call this function, which will structure its output into JSON format
-def report_vulnerability(vulnerability_type, severity, mitigation_recommendation):
-    return json.dumps({
-        'vulnerability_type': vulnerability_type,
-        'severity': severity,
-        'mitigation_recommendation': mitigation_recommendation
-    })
-
 # get OpenAI key from secret manager
 api_secret = client.access_secret_version(
     request=secmgr.AccessSecretVersionRequest(
@@ -54,18 +46,52 @@ api_secret = client.access_secret_version(
 api_key = api_secret.payload.data.decode('utf-8')
 openai.api_key = api_key
 
+# GPT-4 should call this function, which will structure its output into JSON format
+def report_vulnerability(vulnerability_type, severity, mitigation_recommendation):
+    return json.dumps({
+        'vulnerability_type': vulnerability_type,
+        'severity': severity,
+        'mitigation_recommendation': mitigation_recommendation
+    })
+
 @app.route("/analyze", methods=['POST'])
 def analyze(request):
+    messages = [
+        {'role': "system", 'content': system_prompt},
+        {'role': "user", 'content': request.data}
+    ] 
     response = openai.ChatCompletion.create(
         model=model,
-        messages=[
-            {'role': "system", 'content': system_prompt},
-            {'role': "user", 'content': request.data}
-        ],
+        messages=messages,
         functions=functions,
         function_call="report_vulnerability"
     )
-    return json.dumps(response.choices[0].message)
+    response_message = response["choices"][0]["message"]
+    if response_message.get("function_call"):
+        available_functions = {
+            "report_vulnerability": report_vulnerability
+        }
+        function_name = response_message["function_call"]["name"]
+        called_function = available_functions[function_name]
+        function_args = json.loads(response_message["function_call"]["arguments"])
+        function_response = called_function(
+            vulnerability_type=function_args.get("vulnerability_type"),
+            severity=function_args.get("severity"),
+            mitigation_recommendation=function_args.get("mitigation_recommendation")
+        )
+        messages.append(response_message)
+        messages.append(
+            {
+                "role": "function",
+                "name": function_name,
+                "content": function_response
+            }
+        )
+        final_response = openai.ChatCompletion.create(
+            model=model,
+            messages=messages
+        )
+        return final_response
 
 if __name__ == "__main__":
     app.run()
