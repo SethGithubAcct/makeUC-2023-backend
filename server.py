@@ -1,10 +1,13 @@
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 from google.cloud import secretmanager_v1 as secmgr
 import openai
 import json
 
 # setup
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 client = secmgr.SecretManagerServiceClient()
 model = "gpt-4" # change me to change GPT model
 system_prompt = """
@@ -55,6 +58,7 @@ def report_vulnerability(vulnerability_type, severity, mitigation_recommendation
     })
 
 @app.route("/analyze", methods=['POST'])
+@cross_origin()
 def analyze(request):
     messages = [
         {'role': "system", 'content': system_prompt},
