@@ -69,7 +69,7 @@ def analyze():
         model=model,
         messages=messages,
         functions=functions,
-        function_call="report_vulnerability"
+        function_call="auto"
     )
     response_message = response["choices"][0]["message"]
     if response_message.get("function_call"):
