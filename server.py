@@ -33,7 +33,7 @@ functions = [
                 "mitigation_recommendation": {
                     "type": "string",
                     "description": "An explanation for the user on how they could fix the vulnerability in their code"
-                }
+                },
             },
             "required": ["vulnerability_type", "severity", "mitigation_recommendation"]
         }
