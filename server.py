@@ -96,6 +96,7 @@ def analyze():
             model=model,
             messages=messages
         )
+        print(final_response)
         return final_response
 
 if __name__ == "__main__":
