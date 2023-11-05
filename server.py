@@ -97,6 +97,7 @@ def analyze(request):
         )
         output = jsonify(final_response)
         output.headers.add("Access-Control-Allow-Origin", "*")
+        output.headers.add("Access-Control-Allow-Methods", "*")
         return output
 
 if __name__ == "__main__":
