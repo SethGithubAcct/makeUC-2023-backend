@@ -6,7 +6,7 @@ import json
 
 # setup
 app = Flask(__name__)
-cors = CORS(app)
+cors = CORS(app, origins="*", methods="POST")
 app.config['CORS_HEADERS'] = 'Content-Type'
 client = secmgr.SecretManagerServiceClient()
 model = "gpt-4" # change me to change GPT model
@@ -58,7 +58,7 @@ def report_vulnerability(vulnerability_type, severity, mitigation_recommendation
     })
 
 @app.route("/analyze", methods=['POST'])
-@cross_origin(origins="*", allow_headers="*", methods="*")
+@cross_origin()
 def analyze(request):
     messages = [
         {'role': "system", 'content': system_prompt},
